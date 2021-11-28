@@ -2,15 +2,20 @@
     <!-- Base application theme. -->
     <style name="Theme.Nagwa" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimary">@color/red_light</item>
+        <item name="colorPrimaryVariant">@color/red_dark</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
+        <item name="colorSecondary">@color/blue_light</item>
+        <item name="colorSecondaryVariant">@color/blue_light</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <color name="theme_gray">@color/gray_light</color>
+    <color name="theme_rectangle_type_background">@color/blue_light</color>
+    <color name="separator_color">@color/gray_dark</color>
+    <color name="empty_text_color">@color/white</color>
 </resources>

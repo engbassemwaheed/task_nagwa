@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Nagwa</string>
+    <string name="cd_download">Download</string>
+    <string name="cd_delete">Delete</string>
+    <string name="not_downloaded">not_downloaded</string>
+    <string name="downloaded">downloaded</string>
+    <string name="downloading">downloading</string>
+    <string name="cd_open">Open</string>
+    <string name="empty_list">No data available!</string>
 </resources>
