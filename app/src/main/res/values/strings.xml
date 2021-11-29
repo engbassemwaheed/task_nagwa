@@ -7,4 +7,7 @@
     <string name="downloading">downloading</string>
     <string name="cd_open">Open</string>
     <string name="empty_list">No data available!</string>
+    <string name="download_pending">Pending</string>
+    <string name="download_error">Download error</string>
+    <string name="unknown">UNKNOW</string>
 </resources>

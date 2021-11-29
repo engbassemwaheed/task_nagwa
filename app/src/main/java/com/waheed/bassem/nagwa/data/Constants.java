@@ -2,6 +2,8 @@ package com.waheed.bassem.nagwa.data;
 
 public final class Constants {
 
+    public static final String DATA_FILE_NAME = "file_list.json";
+
     public static final class DownloadState {
         public static final int NOT_DOWNLOADED = 1;
         public static final int PENDING_DOWNLOAD = 2;

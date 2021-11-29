@@ -15,14 +15,13 @@ import com.waheed.bassem.nagwa.data.Constants.JsonConstants;
 
 public class MediaDataManager {
 
-    private static final String DATA_FILE_NAME = "file_list.json";
 
     private static MediaDataManager mediaDataManager;
 
     private MediaDataManager() {
     }
 
-    public MediaDataManager getInstance() {
+    public static MediaDataManager getInstance() {
         if (mediaDataManager == null) {
             mediaDataManager = new MediaDataManager();
         }
@@ -49,12 +48,11 @@ public class MediaDataManager {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
 
                 String name = jsonObject.optString(JsonConstants.NAME, JsonConstants.DEFAULT_STRING);
-                String url = jsonObject.optString(JsonConstants.ID, JsonConstants.DEFAULT_STRING);
+                String url = jsonObject.optString(JsonConstants.URL, JsonConstants.DEFAULT_STRING);
                 String type = jsonObject.optString(JsonConstants.TYPE, JsonConstants.DEFAULT_STRING);
                 int id = jsonObject.optInt(JsonConstants.ID, JsonConstants.DEFAULT_INT);
 
                 mediaItems.add(new MediaItem(id, type, name, url));
-
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -67,7 +65,7 @@ public class MediaDataManager {
     private String loadJSON(Context context) {
         String json;
         try {
-            InputStream inputStream = context.getAssets().open(DATA_FILE_NAME);
+            InputStream inputStream = context.getAssets().open(Constants.DATA_FILE_NAME);
             int size = inputStream.available();
             byte[] buffer = new byte[size];
             inputStream.read(buffer);

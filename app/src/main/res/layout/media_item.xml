@@ -2,13 +2,13 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/card_margin"
     android:minHeight="@dimen/min_height"
     app:cardCornerRadius="@dimen/card_corner_radius"
     app:cardElevation="@dimen/card_elevation">
-
 
     <View
         android:id="@+id/indicator_view"
@@ -66,12 +66,11 @@
                 android:layout_marginEnd="@dimen/small_internal_horizontal_margin"
                 android:drawablePadding="@dimen/small_internal_vertical_margin"
                 android:gravity="start|center_vertical"
+                android:text="@string/not_downloaded"
                 android:textColor="@color/gray_dark"
-                android:textStyle="bold"
                 android:textSize="@dimen/sub_text_size"
                 android:visibility="visible"
-                app:drawableStartCompat="@drawable/ic_not_downloaded"
-                android:text="@string/not_downloaded" />
+                app:drawableStartCompat="@drawable/ic_not_downloaded" />
 
             <ProgressBar
                 android:id="@+id/download_progress_bar"
@@ -111,9 +110,9 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:visibility="gone"
                 android:contentDescription="@string/cd_open"
-                android:src="@drawable/ic_open" />
+                android:src="@drawable/ic_open"
+                android:visibility="gone" />
 
             <View
                 android:layout_width="@dimen/separator_width"
