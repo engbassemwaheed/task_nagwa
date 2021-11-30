@@ -7,13 +7,17 @@ import com.waheed.bassem.nagwa.data.MediaItem;
 
 import java.io.File;
 
-public class Utilities {
+public class NagwaFileManager {
 
     private static final String ENCLOSURE_FOLDER = "Nagwa task downloads";
 
     public static File getDataFile(MediaItem mediaItem) {
         String path = "/" + mediaItem.getName() + mediaItem.getExtension();
 
+        return new File(getContainerFolder().getAbsoluteFile(), path);
+    }
+
+    public static File getContainerFolder() {
         File containerFolder;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -22,7 +26,6 @@ public class Utilities {
             containerFolder = new File(Environment.getExternalStorageDirectory().getAbsoluteFile(), ENCLOSURE_FOLDER);
         }
         containerFolder.mkdir();
-        return new File(containerFolder.getAbsoluteFile(), path);
+        return containerFolder;
     }
-
 }

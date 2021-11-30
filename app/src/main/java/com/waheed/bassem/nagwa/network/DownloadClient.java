@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.waheed.bassem.nagwa.data.MediaItem;
-import com.waheed.bassem.nagwa.utils.Utilities;
+import com.waheed.bassem.nagwa.utils.NagwaFileManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -132,7 +132,7 @@ public class DownloadClient implements ProgressListener {
         Log.e(TAG, "saveFile:");
         return Observable.create((ObservableOnSubscribe<File>) emitter -> {
             try {
-                File dataFile = Utilities.getDataFile(internalMediaItem);
+                File dataFile = NagwaFileManager.getDataFile(internalMediaItem);
 
                 BufferedSink sink = Okio.buffer(Okio.sink(dataFile));
                 sink.writeAll(response.body().source());

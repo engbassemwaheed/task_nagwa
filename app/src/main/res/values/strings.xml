@@ -10,4 +10,10 @@
     <string name="download_pending">Pending</string>
     <string name="download_error">Download error</string>
     <string name="unknown">UNKNOWN</string>
+    <string name="why_storage_permission">Storage permission is needed in order to download the media into your device</string>
+    <string name="storing_location">Files will be stored in</string>
+    <string name="denied_permission_cant_download_file">Can\'t download the file, download permission is denied</string>
+    <string name="general_error">Sorry, an error occurred, please try again later!</string>
+    <string name="accept">Accept</string>
+    <string name="deny">Deny</string>
 </resources>

@@ -1,6 +1,8 @@
 package com.waheed.bassem.nagwa.ui;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -10,11 +12,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.waheed.bassem.nagwa.R;
 import com.waheed.bassem.nagwa.data.MediaItem;
+import com.waheed.bassem.nagwa.ui.dialog.AcceptanceDialog;
+import com.waheed.bassem.nagwa.ui.dialog.AcceptanceDialogInterface;
 import com.waheed.bassem.nagwa.ui.recycler_view.MainAdapter;
 
-public class MainActivity extends AppCompatActivity implements ActionInterface {
+public class MainActivity extends AppCompatActivity implements ActionInterface, ActivityInterface {
 
     private static final String TAG = "MainActivity";
 
@@ -22,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements ActionInterface {
     private LinearLayout emptyLinearLayout;
     private RecyclerView recyclerView;
     private MainViewModel mainViewModel;
+    private AcceptanceDialog acceptanceDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements ActionInterface {
 
         //view model
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        mainViewModel.setActivityInterface(this);
 
         //adapter
         mainAdapter = new MainAdapter(this, this);
@@ -40,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements ActionInterface {
         recyclerView.setAdapter(mainAdapter);
 
         emptyLinearLayout = findViewById(R.id.empty_linear_layout);
+
+        acceptanceDialog = new AcceptanceDialog(this);
 
         //view model observers
         setViewModelObservers();
@@ -70,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements ActionInterface {
     @Override
     public void onDownloadRequested(MediaItem mediaItem) {
         Log.e(TAG, "onDownloadRequested: mediaItem = " + mediaItem.getId());
-        mainViewModel.downloadFile(mediaItem);
+        mainViewModel.downloadFile(this, mediaItem);
     }
 
     @Override
@@ -79,4 +88,47 @@ public class MainActivity extends AppCompatActivity implements ActionInterface {
         mainViewModel.openFile(this, mediaItem);
     }
 
+
+    @Override
+    public void showAcceptanceDialog(String mainString, String secondaryString, int requestCode) {
+        Log.e(TAG, "showAcceptanceDialog");
+        acceptanceDialog.show(mainString, secondaryString, new AcceptanceDialogInterface() {
+            @Override
+            public void onAccepted() {
+                Log.e(TAG, "onAccepted:");
+                mainViewModel.onAcceptanceDialogResult(MainActivity.this, requestCode, true);
+            }
+
+            @Override
+            public void onDenied() {
+                Log.e(TAG, "onDenied:");
+                mainViewModel.onAcceptanceDialogResult(MainActivity.this, requestCode, false);
+            }
+
+            @Override
+            public void onDismissed() {
+                Log.e(TAG, "onDismissed:");
+                mainViewModel.onAcceptanceDialogResult(MainActivity.this, requestCode, false);
+            }
+        });
+    }
+
+    @Override
+    public void showSnackBar(int messageId) {
+        Snackbar snackbar = Snackbar.make(findViewById(R.id.snackbar_anchor), getString(messageId), Snackbar.LENGTH_SHORT);
+        snackbar.getView().setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.snack_bar_rectangle, getTheme()));
+        snackbar.show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        mainViewModel.onRequestedPermissionResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (acceptanceDialog.isShowing()) acceptanceDialog.dismiss();
+    }
 }

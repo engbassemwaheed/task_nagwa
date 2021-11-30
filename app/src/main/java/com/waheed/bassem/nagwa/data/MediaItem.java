@@ -118,4 +118,8 @@ public class MediaItem {
     public void setDownloadPending() {
         downloadState = Constants.DownloadState.PENDING_DOWNLOAD;
     }
+
+    public void setNotDownloaded() {
+        downloadState = Constants.DownloadState.NOT_DOWNLOADED;
+    }
 }
