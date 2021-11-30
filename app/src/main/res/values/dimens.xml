@@ -22,5 +22,4 @@
     <dimen name="dialog_margin">35dp</dimen>
     <dimen name="snack_bar_position">50dp</dimen>
 
-
 </resources>

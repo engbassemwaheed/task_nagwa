@@ -152,7 +152,7 @@ public class DownloadClient implements ProgressListener {
     public void update(long bytesRead, long contentLength, boolean done) {
         float progressFloat = ((float)bytesRead / (float)contentLength) * 100;
         int progressInt = (int) Math.ceil(progressFloat);
-        if (progressInt % 5 == 0) {
+        if (progressInt % 2 == 0) {
             if (progressInt < 0) progressInt = -1;
             if (mediaItem!=null && mediaItem.getDownloadProgress() != progressInt) {
                 mediaItem.setDownloadProgress(progressInt);
