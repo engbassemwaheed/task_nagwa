@@ -63,13 +63,22 @@ class MainViewHolder extends RecyclerView.ViewHolder {
 
     void setListeners(MediaItem mediaItem, int position) {
         mainCardView.setOnClickListener(v -> {
-            mediaItem.invertExpanded();
-            adapterInterface.setItemChanged(mediaItem, position);
+            if (mediaItem.isDownloaded() || mediaItem.isNotDownloaded()) {
+                mediaItem.invertExpanded();
+                adapterInterface.updateItem(mediaItem, position);
+            }
         });
 
-        downloadImageButton.setOnClickListener(v -> actionInterface.onDownloadRequested(mediaItem));
+        downloadImageButton.setOnClickListener(v -> {
+            mediaItem.invertExpanded();
+            mediaItem.setDownloadPending();
+            adapterInterface.updateItem(mediaItem, position);
+            actionInterface.onDownloadRequested(mediaItem);
+        });
 
-        openImageButton.setOnClickListener(v -> actionInterface.onOpenRequested(mediaItem));
+        openImageButton.setOnClickListener(v -> {
+            actionInterface.onOpenRequested(mediaItem);
+        });
     }
 
     private void displayType(String type) {
@@ -89,7 +98,7 @@ class MainViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    private void displayDownloadState (MediaItem mediaItem) {
+    private void displayDownloadState(MediaItem mediaItem) {
         switch (mediaItem.getDownloadState()) {
             case Constants.DownloadState.PENDING_DOWNLOAD:
                 setDownloadPending();
@@ -104,21 +113,25 @@ class MainViewHolder extends RecyclerView.ViewHolder {
                 setDownloadError();
                 break;
             default: // Constants.DownloadState.NOT_DOWNLOADED:
-                setDownloadNot();
+                setNotDownloaded();
                 break;
         }
     }
 
     private void setDownloading(int progress) {
-        String progressString = progress + "%";
-        stateTextView.setText(progressString);
-        stateTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_downloading, 0, 0, 0);
-
+        if (progress>=0) {
+            String progressString = progress + "%";
+            stateTextView.setText(progressString);
+            downloadProgressBar.setIndeterminate(false);
+            downloadProgressBar.setProgress(progress);
+        } else {
+            downloadProgressBar.setIndeterminate(true);
+            stateTextView.setText(R.string.downloading);
+        }
         downloadProgressBar.setVisibility(View.VISIBLE);
-        downloadProgressBar.setIndeterminate(false);
-        downloadProgressBar.setProgress(progress);
-
+        stateTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_downloading, 0, 0, 0);
         stateIndicatorView.setBackgroundResource(R.color.yellow);
+
     }
 
     private void setDownloaded() {
@@ -127,6 +140,9 @@ class MainViewHolder extends RecyclerView.ViewHolder {
         downloadProgressBar.setVisibility(View.GONE);
 
         stateIndicatorView.setBackgroundResource(R.color.green);
+
+        openImageButton.setVisibility(View.VISIBLE);
+        downloadImageButton.setVisibility(View.GONE);
     }
 
     private void setDownloadPending() {
@@ -136,14 +152,20 @@ class MainViewHolder extends RecyclerView.ViewHolder {
         downloadProgressBar.setIndeterminate(true);
 
         stateIndicatorView.setBackgroundResource(R.color.yellow);
+
+        openImageButton.setVisibility(View.GONE);
+        downloadImageButton.setVisibility(View.GONE);
     }
 
-    private void setDownloadNot() {
+    private void setNotDownloaded() {
         stateTextView.setText(R.string.not_downloaded);
         stateTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_not_downloaded, 0, 0, 0);
         downloadProgressBar.setVisibility(View.GONE);
 
         stateIndicatorView.setBackgroundResource(R.color.theme_gray);
+
+        openImageButton.setVisibility(View.GONE);
+        downloadImageButton.setVisibility(View.VISIBLE);
     }
 
     private void setDownloadError() {
@@ -152,6 +174,9 @@ class MainViewHolder extends RecyclerView.ViewHolder {
         downloadProgressBar.setVisibility(View.GONE);
 
         stateIndicatorView.setBackgroundResource(R.color.error_red);
+
+        openImageButton.setVisibility(View.GONE);
+        downloadImageButton.setVisibility(View.GONE);
     }
 
 

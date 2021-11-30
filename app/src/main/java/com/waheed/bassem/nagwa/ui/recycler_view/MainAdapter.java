@@ -50,12 +50,8 @@ public class MainAdapter extends RecyclerView.Adapter<MainViewHolder> implements
         notifyDataSetChanged();
     }
 
-    public void updateItem (MediaItem mediaItem) {
-        //TODO: search for a specific item and update it's state only
-    }
-
     @Override
-    public void setItemChanged(MediaItem mediaItem, int position) {
+    public void updateItem(MediaItem mediaItem, int position) {
         mediaItems.remove(position);
         mediaItems.add(position, mediaItem);
         notifyItemChanged(position);

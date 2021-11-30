@@ -29,7 +29,7 @@
             android:layout_marginStart="@dimen/internal_horizontal_margin"
             android:layout_marginEnd="@dimen/internal_horizontal_margin"
             android:gravity="start|center_vertical"
-            android:textColor="@color/black"
+            android:textColor="@color/text_color"
             android:textSize="@dimen/main_text_size"
             android:textStyle="bold"
             app:drawableEndCompat="@drawable/ic_file_unknown"
@@ -55,7 +55,7 @@
                 android:gravity="start|center_vertical"
                 android:padding="@dimen/small_padding"
                 android:textColor="@color/white"
-                android:textSize="@dimen/sub_text_size"
+                android:textSize="@dimen/small_text_size"
                 tools:text="Name" />
 
             <TextView

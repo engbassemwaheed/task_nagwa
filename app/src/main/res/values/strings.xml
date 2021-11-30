@@ -2,12 +2,12 @@
     <string name="app_name">Nagwa</string>
     <string name="cd_download">Download</string>
     <string name="cd_delete">Delete</string>
-    <string name="not_downloaded">not_downloaded</string>
-    <string name="downloaded">downloaded</string>
-    <string name="downloading">downloading</string>
+    <string name="not_downloaded">Not downloaded</string>
+    <string name="downloaded">Downloaded</string>
+    <string name="downloading">Downloading</string>
     <string name="cd_open">Open</string>
     <string name="empty_list">No data available!</string>
     <string name="download_pending">Pending</string>
     <string name="download_error">Download error</string>
-    <string name="unknown">UNKNOW</string>
+    <string name="unknown">UNKNOWN</string>
 </resources>

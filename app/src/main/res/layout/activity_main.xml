@@ -34,7 +34,7 @@
             android:layout_marginTop="@dimen/internal_vertical_margin"
             android:gravity="center"
             android:textStyle="bold"
-            android:textColor="@color/empty_text_color"
+            android:textColor="@color/text_color"
             android:text="@string/empty_list" />
 
     </LinearLayout>

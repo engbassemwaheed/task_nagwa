@@ -1,7 +1,6 @@
 package com.waheed.bassem.nagwa.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,16 +14,14 @@ import com.waheed.bassem.nagwa.R;
 import com.waheed.bassem.nagwa.data.MediaItem;
 import com.waheed.bassem.nagwa.ui.recycler_view.MainAdapter;
 
-import java.util.ArrayList;
-
-public class MainActivity extends AppCompatActivity implements Observer<ArrayList<MediaItem>>, ActionInterface {
+public class MainActivity extends AppCompatActivity implements ActionInterface {
 
     private static final String TAG = "MainActivity";
 
     private MainAdapter mainAdapter;
     private LinearLayout emptyLinearLayout;
     private RecyclerView recyclerView;
-
+    private MainViewModel mainViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +29,7 @@ public class MainActivity extends AppCompatActivity implements Observer<ArrayLis
         setContentView(R.layout.activity_main);
 
         //view model
-        MainViewModel mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        mainViewModel.getMediaItemsMutableLiveData().observe(this, this);
+        mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
         //adapter
         mainAdapter = new MainAdapter(this, this);
@@ -45,31 +41,42 @@ public class MainActivity extends AppCompatActivity implements Observer<ArrayLis
 
         emptyLinearLayout = findViewById(R.id.empty_linear_layout);
 
+        //view model observers
+        setViewModelObservers();
+
         //start getting the data
         mainViewModel.getMediaItems(this);
     }
 
+    private void setViewModelObservers() {
+        mainViewModel.getMediaItemsMutableLiveData().observe(this, mediaItems -> {
+            Log.e(TAG, "onChanged: mediaItems size = " + mediaItems.size());
+            if (mediaItems.size() > 0) {
+                recyclerView.setVisibility(View.VISIBLE);
+                emptyLinearLayout.setVisibility(View.GONE);
+                mainAdapter.setMediaItems(mediaItems);
+            } else {
+                recyclerView.setVisibility(View.GONE);
+                emptyLinearLayout.setVisibility(View.VISIBLE);
+            }
+        });
 
-    @Override
-    public void onChanged(ArrayList<MediaItem> mediaItems) {
-        Log.e(TAG, "onChanged: mediaItems size = " + mediaItems.size());
-        if (mediaItems.size() > 0) {
-            recyclerView.setVisibility(View.VISIBLE);
-            emptyLinearLayout.setVisibility(View.GONE);
-            mainAdapter.setMediaItems(mediaItems);
-        } else {
-            recyclerView.setVisibility(View.GONE);
-            emptyLinearLayout.setVisibility(View.VISIBLE);
-        }
+        mainViewModel.getToDownloadMutableLiveData().observe(this, integer -> mainAdapter.notifyItemChanged(integer));
+
+        mainViewModel.getProgressMutableLiveData().observe(this, integerMediaItemPair ->
+                mainAdapter.notifyItemChanged(integerMediaItemPair.first, integerMediaItemPair.second));
     }
 
     @Override
     public void onDownloadRequested(MediaItem mediaItem) {
         Log.e(TAG, "onDownloadRequested: mediaItem = " + mediaItem.getId());
+        mainViewModel.downloadFile(mediaItem);
     }
 
     @Override
     public void onOpenRequested(MediaItem mediaItem) {
         Log.e(TAG, "onOpenRequested: mediaItem id = " + mediaItem.getId());
+        mainViewModel.openFile(this, mediaItem);
     }
+
 }

@@ -17,6 +17,11 @@ public final class Constants {
         public static final String VIDEO = "VIDEO";
     }
 
+    public static final class FileExtension {
+        public static final String PDF = ".pdf";
+        public static final String VIDEO = ".mp4";
+    }
+
     public static final class JsonConstants {
         public static final String ID = "id";
         public static final String TYPE = "type";

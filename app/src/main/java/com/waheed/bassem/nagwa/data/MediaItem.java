@@ -1,5 +1,7 @@
 package com.waheed.bassem.nagwa.data;
 
+import java.io.File;
+
 public class MediaItem {
 
     private final int id;
@@ -8,8 +10,8 @@ public class MediaItem {
     private final String url;
     private int downloadState;
     private int downloadProgress;
-    private String filePath;
     private boolean isExpanded;
+    private int downloadTrials;
 
     public MediaItem(int id, String type, String name, String url) {
         this.id = id;
@@ -18,8 +20,8 @@ public class MediaItem {
         this.url = url;
         this.downloadState = Constants.DownloadState.NOT_DOWNLOADED;
         this.downloadProgress = 0;
-        this.filePath = Constants.JsonConstants.DEFAULT_STRING;
         this.isExpanded = false;
+        this.downloadTrials = 0;
     }
 
     public int getId() {
@@ -46,20 +48,16 @@ public class MediaItem {
         return downloadProgress;
     }
 
-    public String getFilePath() {
-        return filePath;
-    }
-
     public boolean isExpanded() {
         return isExpanded;
     }
 
-    public void setDownloadState(int downloadState) {
-        this.downloadState = downloadState;
+    public int getDownloadTrials() {
+        return downloadTrials;
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setDownloadState(int downloadState) {
+        this.downloadState = downloadState;
     }
 
     public void invertExpanded() {
@@ -68,5 +66,56 @@ public class MediaItem {
 
     public void setDownloadProgress(int downloadProgress) {
         this.downloadProgress = downloadProgress;
+    }
+
+    public void incrementDownloadTrials() {
+        this.downloadTrials++;
+    }
+
+    public String getExtension() {
+        switch (type) {
+            case Constants.FileType.VIDEO:
+                return Constants.FileExtension.VIDEO;
+            case Constants.FileType.PDF:
+                return Constants.FileExtension.PDF;
+            default:
+                return "";
+        }
+    }
+
+    public boolean isNotDownloaded() {
+        return downloadState == Constants.DownloadState.NOT_DOWNLOADED;
+    }
+
+    public boolean isDownloaded() {
+        return downloadState == Constants.DownloadState.DOWNLOADED;
+    }
+
+    public boolean isDownloadPending() {
+        return downloadState == Constants.DownloadState.PENDING_DOWNLOAD;
+    }
+
+    public boolean isDownloadError() {
+        return downloadState == Constants.DownloadState.ERROR_DOWNLOAD;
+    }
+
+    public boolean isDownloading() {
+        return downloadState == Constants.DownloadState.DOWNLOADING;
+    }
+
+    public void setDownloaded() {
+        downloadState = Constants.DownloadState.DOWNLOADED;
+    }
+
+    public void setDownloading() {
+        downloadState = Constants.DownloadState.DOWNLOADING;
+    }
+
+    public void setDownloadingError() {
+        downloadState = Constants.DownloadState.ERROR_DOWNLOAD;
+    }
+
+    public void setDownloadPending() {
+        downloadState = Constants.DownloadState.PENDING_DOWNLOAD;
     }
 }
