@@ -2,7 +2,6 @@ package com.waheed.bassem.nagwa.network;
 
 import android.util.Log;
 
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.waheed.bassem.nagwa.data.MediaItem;
 import com.waheed.bassem.nagwa.network.dagger.DaggerNetworkComponent;
 import com.waheed.bassem.nagwa.network.dagger.NetworkModule;
@@ -12,8 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.inject.Inject;
-
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
@@ -21,18 +18,14 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import okio.BufferedSink;
 import okio.Okio;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class FileDownloader implements ProgressListener {
 
     private static final String TAG = "FileDownloader";
-    private static final String BASE_URL = "https://www.google.com";
     private static final int MAX_DOWNLOAD_TRIALS = 3;
 
     private static FileDownloader fileDownloader;
@@ -82,7 +75,7 @@ public class FileDownloader implements ProgressListener {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<File>() {
                         @Override
-                        public void onError(Throwable e) {
+                        public void onError(@NonNull Throwable e) {
                             e.printStackTrace();
                             Log.e(TAG, "onError e = " + e.getMessage());
                             mediaItem.incrementDownloadTrials();
