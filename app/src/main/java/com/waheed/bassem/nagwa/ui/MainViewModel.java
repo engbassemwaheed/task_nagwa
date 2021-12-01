@@ -32,6 +32,7 @@ public class MainViewModel extends ViewModel implements DownloadInterface {
     private final ArrayList<MediaItem> mediaItems;
     private ActivityInterface activityInterface;
     private MediaItem pendingMediaItem = null;
+    private boolean pendingIsDownload = true;
 
 
     public MainViewModel() {
@@ -62,6 +63,9 @@ public class MainViewModel extends ViewModel implements DownloadInterface {
     public void getMediaItems(Context context) {
         if (mediaItems.size() == 0) {
             mediaItems.addAll(mediaDataManager.getMediaItems(context));
+            if (NagwaPermissionManager.checkStoragePermission(context)) {
+                handleExisting();
+            }
             mediaItemsMutableLiveData.setValue(mediaItems);
         }
     }
@@ -70,18 +74,26 @@ public class MainViewModel extends ViewModel implements DownloadInterface {
         if (NagwaPermissionManager.checkStoragePermission(appCompatActivity)) {
             downloadClient.downloadFile(mediaItem);
         } else {
-            pendingMediaItem = mediaItem;
-            Pair<String, String> descriptionStrings = NagwaPermissionManager.getDescriptionDialogTexts(appCompatActivity);
-            if (activityInterface != null) {
-                activityInterface.showAcceptanceDialog(descriptionStrings.first,
-                        descriptionStrings.second,
-                        STORAGE_PERMISSION_DIALOG);
-            }
+            requestPermission(appCompatActivity, mediaItem, true);
         }
     }
 
-    private void displayGeneralError() {
-        if (activityInterface != null) activityInterface.showSnackBar(R.string.general_error);
+    public void openFile(Context context, MediaItem mediaItem) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri uri = Uri.parse(NagwaFileManager.getDataFile(mediaItem).getAbsolutePath());
+        intent.setDataAndType(uri, "*/*");
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(Intent.createChooser(intent, "Open folder"));
+    }
+
+    public void deleteFile(AppCompatActivity appCompatActivity, MediaItem mediaItem) {
+        if (NagwaPermissionManager.checkStoragePermission(appCompatActivity)) {
+            NagwaFileManager.deleteFile(mediaItem);
+            mediaItem.setNotDownloaded();
+            toDownloadMutableLiveData.setValue(mediaItems.indexOf(mediaItem));
+        } else {
+            requestPermission(appCompatActivity, mediaItem, false);
+        }
     }
 
     public void onAcceptanceDialogResult(AppCompatActivity appCompatActivity, int code, boolean isAccepted) {
@@ -116,20 +128,16 @@ public class MainViewModel extends ViewModel implements DownloadInterface {
         progressMutableLiveData.postValue(new Pair<>(mediaItems.indexOf(mediaItem), mediaItem));
     }
 
-    public void openFile(Context context, MediaItem mediaItem) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        Uri uri = Uri.parse(NagwaFileManager.getDataFile(mediaItem).getAbsolutePath());
-        intent.setDataAndType(uri, "*/*");
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(Intent.createChooser(intent, "Open folder"));
-    }
-
     public void onRequestedPermissionResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Boolean result = NagwaPermissionManager.isPermissionGranted(requestCode, permissions, grantResults);
         if (result != null) {
             if (result) {
                 if (pendingMediaItem != null) {
-                    downloadClient.downloadFile(pendingMediaItem);
+                    if (pendingIsDownload) {
+                        downloadClient.downloadFile(pendingMediaItem);
+                    } else {
+                        NagwaFileManager.deleteFile(pendingMediaItem);
+                    }
                 } else {
                     displayGeneralError();
                 }
@@ -138,4 +146,29 @@ public class MainViewModel extends ViewModel implements DownloadInterface {
             }
         }
     }
+
+    private void handleExisting() {
+        for (MediaItem mediaItem : mediaItems) {
+            if (NagwaFileManager.isExist(mediaItem)) {
+                mediaItem.setDownloaded();
+            }
+        }
+    }
+
+    private void requestPermission(AppCompatActivity appCompatActivity, MediaItem mediaItem, boolean isDownload) {
+        pendingMediaItem = mediaItem;
+        pendingIsDownload = isDownload;
+        Pair<String, String> descriptionStrings = NagwaPermissionManager.getDescriptionDialogTexts(appCompatActivity);
+        if (activityInterface != null) {
+            activityInterface.showAcceptanceDialog(descriptionStrings.first,
+                    descriptionStrings.second,
+                    STORAGE_PERMISSION_DIALOG);
+        }
+    }
+
+    private void displayGeneralError() {
+        if (activityInterface != null) activityInterface.showSnackBar(R.string.general_error);
+    }
+
+
 }

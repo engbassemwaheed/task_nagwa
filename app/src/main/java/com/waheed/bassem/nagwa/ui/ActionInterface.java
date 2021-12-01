@@ -6,5 +6,6 @@ public interface ActionInterface {
 
     void onDownloadRequested (MediaItem mediaItem);
     void onOpenRequested (MediaItem mediaItem);
+    void onDeleteRequested (MediaItem mediaItem);
 
 }

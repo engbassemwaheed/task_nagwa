@@ -1,6 +1,7 @@
 package com.waheed.bassem.nagwa.utils;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Pair;
@@ -14,9 +15,12 @@ import com.waheed.bassem.nagwa.R;
 
 public class NagwaPermissionManager {
 
-    public static boolean checkStoragePermission(AppCompatActivity activity) {
-        boolean isGranted = ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-        return isGranted && Build.VERSION.SDK_INT < Build.VERSION_CODES.R;
+    public static boolean checkStoragePermission(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return true;
+        } else {
+            return ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        }
     }
 
     public static void askForStoragePermission(AppCompatActivity activity) {

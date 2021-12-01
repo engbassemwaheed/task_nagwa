@@ -52,7 +52,8 @@
                 android:layout_marginStart="@dimen/small_internal_horizontal_margin"
                 android:layout_marginEnd="@dimen/small_internal_horizontal_margin"
                 android:background="@drawable/type_rectangle"
-                android:gravity="start|center_vertical"
+                android:gravity="center"
+                android:minWidth="@dimen/type_min_width"
                 android:padding="@dimen/small_padding"
                 android:textColor="@color/white"
                 android:textSize="@dimen/small_text_size"
@@ -104,21 +105,6 @@
                 android:contentDescription="@string/cd_download"
                 android:src="@drawable/ic_download" />
 
-            <ImageButton
-                android:id="@+id/open_image_button"
-                style="@style/ImageButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:contentDescription="@string/cd_open"
-                android:src="@drawable/ic_open"
-                android:visibility="gone" />
-
-            <View
-                android:layout_width="@dimen/separator_width"
-                android:layout_height="match_parent"
-                android:background="@color/separator_color"
-                android:visibility="gone" />
 
             <ImageButton
                 android:id="@+id/delete_image_button"
@@ -128,6 +114,24 @@
                 android:layout_weight="1"
                 android:contentDescription="@string/cd_delete"
                 android:src="@drawable/ic_delete"
+                android:visibility="gone" />
+
+            <View
+                android:id="@+id/separator_view"
+                android:layout_width="@dimen/separator_width"
+                android:layout_height="match_parent"
+                android:background="@color/separator_color"
+                android:visibility="gone" />
+
+
+            <ImageButton
+                android:id="@+id/open_image_button"
+                style="@style/ImageButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:contentDescription="@string/cd_open"
+                android:src="@drawable/ic_open"
                 android:visibility="gone" />
 
 

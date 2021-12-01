@@ -17,6 +17,7 @@ public class NagwaFileManager {
         return new File(getContainerFolder().getAbsoluteFile(), path);
     }
 
+
     public static File getContainerFolder() {
         File containerFolder;
 
@@ -27,5 +28,15 @@ public class NagwaFileManager {
         }
         containerFolder.mkdir();
         return containerFolder;
+    }
+
+    public static boolean isExist(MediaItem mediaItem) {
+        File file = getDataFile(mediaItem);
+        return file.exists() && file.length() != 0;
+    }
+
+    public static void deleteFile(MediaItem mediaItem) {
+        File file = getDataFile(mediaItem);
+        if (file.exists()) file.delete();
     }
 }

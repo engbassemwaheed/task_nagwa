@@ -36,18 +36,19 @@ public class AcceptanceDialog extends BottomSheetDialog {
         mainTextView.setText(mainString);
         secondaryTextView.setText(secondaryString);
 
-        AtomicBoolean denied = new AtomicBoolean(false);
+        AtomicBoolean shouldActivateDismiss = new AtomicBoolean(false);
         acceptedButton.setOnClickListener(v -> {
+            shouldActivateDismiss.set(true);
             acceptanceDialogInterface.onAccepted();
             dismiss();
         });
         deniedButton.setOnClickListener(v -> {
+            shouldActivateDismiss.set(true);
             acceptanceDialogInterface.onDenied();
-            denied.set(true);
             dismiss();
         });
         setOnDismissListener(dialog -> {
-            if (!denied.get()) {
+            if (!shouldActivateDismiss.get()) {
                 acceptanceDialogInterface.onDismissed();
             }
         });

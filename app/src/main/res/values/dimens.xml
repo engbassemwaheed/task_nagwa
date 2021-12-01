@@ -21,5 +21,6 @@
     <dimen name="medium_padding">8dp</dimen>
     <dimen name="dialog_margin">35dp</dimen>
     <dimen name="snack_bar_position">50dp</dimen>
+    <dimen name="type_min_width">50dp</dimen>
 
 </resources>

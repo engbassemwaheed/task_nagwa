@@ -29,6 +29,8 @@ class MainViewHolder extends RecyclerView.ViewHolder {
     private final LinearLayout controlLinearLayout;
     private final ImageButton downloadImageButton;
     private final ImageButton openImageButton;
+    private final ImageButton deleteImageButton;
+    private final View separatorView;
 
     MainViewHolder(@NonNull View itemView, AdapterInterface adapterInterface, ActionInterface actionInterface) {
         super(itemView);
@@ -44,6 +46,8 @@ class MainViewHolder extends RecyclerView.ViewHolder {
         controlLinearLayout = itemView.findViewById(R.id.control_linear_layout);
         downloadImageButton = itemView.findViewById(R.id.download_image_button);
         openImageButton = itemView.findViewById(R.id.open_image_button);
+        deleteImageButton = itemView.findViewById(R.id.delete_image_button);
+        separatorView = itemView.findViewById(R.id.separator_view);
     }
 
     void displayItem(MediaItem mediaItem) {
@@ -71,13 +75,21 @@ class MainViewHolder extends RecyclerView.ViewHolder {
 
         downloadImageButton.setOnClickListener(v -> {
             mediaItem.invertExpanded();
-            mediaItem.setDownloadPending();
             adapterInterface.updateItem(mediaItem, position);
+            mediaItem.setDownloadPending();
             actionInterface.onDownloadRequested(mediaItem);
         });
 
         openImageButton.setOnClickListener(v -> {
+            mediaItem.invertExpanded();
+            adapterInterface.updateItem(mediaItem, position);
             actionInterface.onOpenRequested(mediaItem);
+        });
+
+        deleteImageButton.setOnClickListener(v -> {
+            mediaItem.invertExpanded();
+            adapterInterface.updateItem(mediaItem, position);
+            actionInterface.onDeleteRequested(mediaItem);
         });
     }
 
@@ -119,7 +131,7 @@ class MainViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void setDownloading(int progress) {
-        if (progress>=0) {
+        if (progress >= 0) {
             String progressString = progress + "%";
             stateTextView.setText(progressString);
             downloadProgressBar.setIndeterminate(false);
@@ -143,6 +155,8 @@ class MainViewHolder extends RecyclerView.ViewHolder {
 
         openImageButton.setVisibility(View.VISIBLE);
         downloadImageButton.setVisibility(View.GONE);
+        separatorView.setVisibility(View.VISIBLE);
+        deleteImageButton.setVisibility(View.VISIBLE);
     }
 
     private void setDownloadPending() {
@@ -155,6 +169,8 @@ class MainViewHolder extends RecyclerView.ViewHolder {
 
         openImageButton.setVisibility(View.GONE);
         downloadImageButton.setVisibility(View.GONE);
+        separatorView.setVisibility(View.GONE);
+        deleteImageButton.setVisibility(View.GONE);
     }
 
     private void setNotDownloaded() {
@@ -166,6 +182,8 @@ class MainViewHolder extends RecyclerView.ViewHolder {
 
         openImageButton.setVisibility(View.GONE);
         downloadImageButton.setVisibility(View.VISIBLE);
+        separatorView.setVisibility(View.GONE);
+        deleteImageButton.setVisibility(View.GONE);
     }
 
     private void setDownloadError() {
@@ -177,6 +195,8 @@ class MainViewHolder extends RecyclerView.ViewHolder {
 
         openImageButton.setVisibility(View.GONE);
         downloadImageButton.setVisibility(View.GONE);
+        separatorView.setVisibility(View.GONE);
+        deleteImageButton.setVisibility(View.GONE);
     }
 
 

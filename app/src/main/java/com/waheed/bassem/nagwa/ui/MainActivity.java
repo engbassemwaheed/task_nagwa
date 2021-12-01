@@ -88,6 +88,12 @@ public class MainActivity extends AppCompatActivity implements ActionInterface, 
         mainViewModel.openFile(this, mediaItem);
     }
 
+    @Override
+    public void onDeleteRequested(MediaItem mediaItem) {
+        Log.e(TAG, "onOpenRequested: mediaItem id = " + mediaItem.getId());
+        mainViewModel.deleteFile(this, mediaItem);
+    }
+
 
     @Override
     public void showAcceptanceDialog(String mainString, String secondaryString, int requestCode) {
