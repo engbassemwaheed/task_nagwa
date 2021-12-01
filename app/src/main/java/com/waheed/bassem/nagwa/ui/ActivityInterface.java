@@ -1,6 +1,6 @@
 package com.waheed.bassem.nagwa.ui;
 
-interface ActivityInterface {
+public interface ActivityInterface {
 
     void showAcceptanceDialog(String mainString, String secondaryString, int requestCode);
 
