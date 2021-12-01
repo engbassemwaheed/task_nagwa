@@ -13,12 +13,19 @@ import androidx.lifecycle.ViewModel;
 import com.waheed.bassem.nagwa.R;
 import com.waheed.bassem.nagwa.data.MediaDataManager;
 import com.waheed.bassem.nagwa.data.MediaItem;
-import com.waheed.bassem.nagwa.network.DownloadClient;
+import com.waheed.bassem.nagwa.network.FileDownloader;
 import com.waheed.bassem.nagwa.network.DownloadInterface;
-import com.waheed.bassem.nagwa.utils.NagwaFileManager;
+import com.waheed.bassem.nagwa.network.dagger.DaggerNetworkComponent;
+import com.waheed.bassem.nagwa.network.dagger.NetworkModule;
+import com.waheed.bassem.nagwa.utils.NagwaFileUtils;
 import com.waheed.bassem.nagwa.utils.NagwaPermissionManager;
 
 import java.util.ArrayList;
+
+import javax.inject.Inject;
+
+import dagger.Component;
+
 
 public class MainViewModel extends ViewModel implements DownloadInterface {
 
@@ -28,7 +35,7 @@ public class MainViewModel extends ViewModel implements DownloadInterface {
     private final MutableLiveData<Pair<Integer, MediaItem>> progressMutableLiveData;
     private final MutableLiveData<Integer> toDownloadMutableLiveData;
     private final MediaDataManager mediaDataManager;
-    private final DownloadClient downloadClient;
+    private final FileDownloader fileDownloader;
     private final ArrayList<MediaItem> mediaItems;
     private ActivityInterface activityInterface;
     private MediaItem pendingMediaItem = null;
@@ -40,7 +47,7 @@ public class MainViewModel extends ViewModel implements DownloadInterface {
         toDownloadMutableLiveData = new MutableLiveData<>();
         progressMutableLiveData = new MutableLiveData<>();
         mediaDataManager = MediaDataManager.getInstance();
-        downloadClient = DownloadClient.getInstance(this);
+        fileDownloader = FileDownloader.getInstance(this);
         mediaItems = new ArrayList<>();
     }
 
@@ -72,7 +79,7 @@ public class MainViewModel extends ViewModel implements DownloadInterface {
 
     public void downloadFile(AppCompatActivity appCompatActivity, MediaItem mediaItem) {
         if (NagwaPermissionManager.checkStoragePermission(appCompatActivity)) {
-            downloadClient.downloadFile(mediaItem);
+            fileDownloader.downloadFile(mediaItem);
         } else {
             requestPermission(appCompatActivity, mediaItem, true);
         }
@@ -80,7 +87,7 @@ public class MainViewModel extends ViewModel implements DownloadInterface {
 
     public void openFile(Context context, MediaItem mediaItem) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        Uri uri = Uri.parse(NagwaFileManager.getDataFile(mediaItem).getAbsolutePath());
+        Uri uri = Uri.parse(NagwaFileUtils.getDataFile(mediaItem).getAbsolutePath());
         intent.setDataAndType(uri, "*/*");
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(Intent.createChooser(intent, "Open folder"));
@@ -88,7 +95,7 @@ public class MainViewModel extends ViewModel implements DownloadInterface {
 
     public void deleteFile(AppCompatActivity appCompatActivity, MediaItem mediaItem) {
         if (NagwaPermissionManager.checkStoragePermission(appCompatActivity)) {
-            NagwaFileManager.deleteFile(mediaItem);
+            NagwaFileUtils.deleteFile(mediaItem);
             mediaItem.setNotDownloaded();
             toDownloadMutableLiveData.setValue(mediaItems.indexOf(mediaItem));
         } else {
@@ -134,9 +141,9 @@ public class MainViewModel extends ViewModel implements DownloadInterface {
             if (result) {
                 if (pendingMediaItem != null) {
                     if (pendingIsDownload) {
-                        downloadClient.downloadFile(pendingMediaItem);
+                        fileDownloader.downloadFile(pendingMediaItem);
                     } else {
-                        NagwaFileManager.deleteFile(pendingMediaItem);
+                        NagwaFileUtils.deleteFile(pendingMediaItem);
                     }
                 } else {
                     displayGeneralError();
@@ -149,7 +156,7 @@ public class MainViewModel extends ViewModel implements DownloadInterface {
 
     private void handleExisting() {
         for (MediaItem mediaItem : mediaItems) {
-            if (NagwaFileManager.isExist(mediaItem)) {
+            if (NagwaFileUtils.isExist(mediaItem)) {
                 mediaItem.setDownloaded();
             }
         }

@@ -7,7 +7,7 @@ import com.waheed.bassem.nagwa.data.MediaItem;
 
 import java.io.File;
 
-public class NagwaFileManager {
+public class NagwaFileUtils {
 
     private static final String ENCLOSURE_FOLDER = "Nagwa task downloads";
 

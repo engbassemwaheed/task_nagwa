@@ -30,7 +30,7 @@ public class NagwaPermissionManager {
     public static Pair<String, String> getDescriptionDialogTexts(AppCompatActivity appCompatActivity) {
         String mainString = appCompatActivity.getString(R.string.why_storage_permission);
         String secondaryString = appCompatActivity.getString(R.string.storing_location);
-        secondaryString += " \"" + NagwaFileManager.getContainerFolder().getAbsoluteFile() + "\"";
+        secondaryString += " \"" + NagwaFileUtils.getContainerFolder().getAbsoluteFile() + "\"";
         return new Pair<>(mainString, secondaryString);
     }
 
