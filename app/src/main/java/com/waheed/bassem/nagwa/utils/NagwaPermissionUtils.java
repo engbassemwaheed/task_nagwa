@@ -13,7 +13,7 @@ import androidx.core.content.ContextCompat;
 
 import com.waheed.bassem.nagwa.R;
 
-public class NagwaPermissionManager {
+public class NagwaPermissionUtils {
 
     public static boolean checkStoragePermission(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

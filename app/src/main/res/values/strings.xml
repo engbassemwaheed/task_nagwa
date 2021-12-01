@@ -16,4 +16,7 @@
     <string name="general_error">Sorry, an error occurred, please try again later!</string>
     <string name="accept">Accept</string>
     <string name="deny">Deny</string>
+    <string name="cant_find_app">Can\'t find app that opens</string>
+    <string name="download_from_store">Please download one from GooglePlay Store</string>
+    <string name="open_folder">Open Folder</string>
 </resources>

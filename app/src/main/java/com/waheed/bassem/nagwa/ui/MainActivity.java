@@ -134,6 +134,13 @@ public class MainActivity extends AppCompatActivity implements ActionInterface, 
     }
 
     @Override
+    public void showSnackBar(String message) {
+        Snackbar snackbar = Snackbar.make(findViewById(R.id.snackbar_anchor), message, Snackbar.LENGTH_SHORT);
+        snackbar.getView().setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.snack_bar_rectangle, getTheme()));
+        snackbar.show();
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         mainViewModel.onRequestedPermissionResult(requestCode, permissions, grantResults);

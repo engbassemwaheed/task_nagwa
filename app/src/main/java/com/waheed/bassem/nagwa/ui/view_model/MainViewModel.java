@@ -2,6 +2,7 @@ package com.waheed.bassem.nagwa.ui.view_model;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.util.Pair;
 
@@ -19,8 +20,9 @@ import com.waheed.bassem.nagwa.network.DownloadInterface;
 import com.waheed.bassem.nagwa.network.dagger.DaggerNetworkComponent;
 import com.waheed.bassem.nagwa.network.dagger.NetworkModule;
 import com.waheed.bassem.nagwa.ui.ActivityInterface;
+import com.waheed.bassem.nagwa.utils.FileOpenUtils;
 import com.waheed.bassem.nagwa.utils.NagwaFileUtils;
-import com.waheed.bassem.nagwa.utils.NagwaPermissionManager;
+import com.waheed.bassem.nagwa.utils.NagwaPermissionUtils;
 
 import java.util.ArrayList;
 
@@ -72,7 +74,7 @@ public class MainViewModel extends ViewModel implements DownloadInterface {
     public void getMediaItems(Context context) {
         if (mediaItems.size() == 0) {
             mediaItems.addAll(mediaDataManager.getMediaItems(context));
-            if (NagwaPermissionManager.checkStoragePermission(context)) {
+            if (NagwaPermissionUtils.checkStoragePermission(context)) {
                 handleExisting();
             }
             mediaItemsMutableLiveData.setValue(mediaItems);
@@ -80,7 +82,7 @@ public class MainViewModel extends ViewModel implements DownloadInterface {
     }
 
     public void downloadFile(AppCompatActivity appCompatActivity, MediaItem mediaItem) {
-        if (NagwaPermissionManager.checkStoragePermission(appCompatActivity)) {
+        if (NagwaPermissionUtils.checkStoragePermission(appCompatActivity)) {
             fileDownloader.downloadFile(mediaItem);
         } else {
             requestPermission(appCompatActivity, mediaItem, true);
@@ -88,15 +90,16 @@ public class MainViewModel extends ViewModel implements DownloadInterface {
     }
 
     public void openFile(Context context, MediaItem mediaItem) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        Uri uri = Uri.parse(NagwaFileUtils.getDataFile(mediaItem).getAbsolutePath());
-        intent.setDataAndType(uri, "*/*");
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(Intent.createChooser(intent, "Open folder"));
+        Intent intent = FileOpenUtils.getIntent(context, mediaItem);
+        if (intent != null) {
+            context.startActivity(Intent.createChooser(intent, context.getString(R.string.open_folder)));
+        } else {
+            activityInterface.showSnackBar(FileOpenUtils.getErrorMessage(context, mediaItem.getExtension()));
+        }
     }
 
     public void deleteFile(AppCompatActivity appCompatActivity, MediaItem mediaItem) {
-        if (NagwaPermissionManager.checkStoragePermission(appCompatActivity)) {
+        if (NagwaPermissionUtils.checkStoragePermission(appCompatActivity)) {
             NagwaFileUtils.deleteFile(mediaItem);
             mediaItem.setNotDownloaded();
             toDownloadMutableLiveData.setValue(mediaItems.indexOf(mediaItem));
@@ -109,13 +112,13 @@ public class MainViewModel extends ViewModel implements DownloadInterface {
         switch (code) {
             case STORAGE_PERMISSION_DIALOG:
                 if (isAccepted) {
-                    NagwaPermissionManager.askForStoragePermission(appCompatActivity);
+                    NagwaPermissionUtils.askForStoragePermission(appCompatActivity);
                 } else {
                     if (pendingMediaItem != null) {
                         pendingMediaItem.setNotDownloaded();
                         toDownloadMutableLiveData.setValue(mediaItems.indexOf(pendingMediaItem));
                     }
-                    activityInterface.showSnackBar(NagwaPermissionManager.getDeniedPermissionMessage());
+                    activityInterface.showSnackBar(NagwaPermissionUtils.getDeniedPermissionMessage());
                 }
                 break;
         }
@@ -138,7 +141,7 @@ public class MainViewModel extends ViewModel implements DownloadInterface {
     }
 
     public void onRequestedPermissionResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Boolean result = NagwaPermissionManager.isPermissionGranted(requestCode, permissions, grantResults);
+        Boolean result = NagwaPermissionUtils.isPermissionGranted(requestCode, permissions, grantResults);
         if (result != null) {
             if (result) {
                 if (pendingMediaItem != null) {
@@ -151,7 +154,7 @@ public class MainViewModel extends ViewModel implements DownloadInterface {
                     displayGeneralError();
                 }
             } else {
-                activityInterface.showSnackBar(NagwaPermissionManager.getDeniedPermissionMessage());
+                activityInterface.showSnackBar(NagwaPermissionUtils.getDeniedPermissionMessage());
             }
         }
     }
@@ -167,7 +170,7 @@ public class MainViewModel extends ViewModel implements DownloadInterface {
     private void requestPermission(AppCompatActivity appCompatActivity, MediaItem mediaItem, boolean isDownload) {
         pendingMediaItem = mediaItem;
         pendingIsDownload = isDownload;
-        Pair<String, String> descriptionStrings = NagwaPermissionManager.getDescriptionDialogTexts(appCompatActivity);
+        Pair<String, String> descriptionStrings = NagwaPermissionUtils.getDescriptionDialogTexts(appCompatActivity);
         if (activityInterface != null) {
             activityInterface.showAcceptanceDialog(descriptionStrings.first,
                     descriptionStrings.second,
