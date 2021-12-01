@@ -16,16 +16,7 @@ import com.waheed.bassem.nagwa.data.Constants.JsonConstants;
 public class MediaDataManager {
 
 
-    private static MediaDataManager mediaDataManager;
-
-    private MediaDataManager() {
-    }
-
-    public static MediaDataManager getInstance() {
-        if (mediaDataManager == null) {
-            mediaDataManager = new MediaDataManager();
-        }
-        return mediaDataManager;
+    public MediaDataManager() {
     }
 
     public ArrayList<MediaItem> getMediaItems(Context context) {

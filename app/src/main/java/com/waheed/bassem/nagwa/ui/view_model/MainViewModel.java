@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModel;
 import com.waheed.bassem.nagwa.R;
 import com.waheed.bassem.nagwa.data.MediaDataManager;
 import com.waheed.bassem.nagwa.data.MediaItem;
+import com.waheed.bassem.nagwa.data.dagger.DaggerMediaDataManagerComponent;
 import com.waheed.bassem.nagwa.network.FileDownloader;
 import com.waheed.bassem.nagwa.network.DownloadInterface;
 import com.waheed.bassem.nagwa.network.dagger.DaggerNetworkComponent;
@@ -22,7 +23,6 @@ import com.waheed.bassem.nagwa.utils.NagwaFileUtils;
 import com.waheed.bassem.nagwa.utils.NagwaPermissionManager;
 
 import java.util.ArrayList;
-
 
 public class MainViewModel extends ViewModel implements DownloadInterface {
 
@@ -43,7 +43,9 @@ public class MainViewModel extends ViewModel implements DownloadInterface {
         mediaItemsMutableLiveData = new MutableLiveData<>();
         toDownloadMutableLiveData = new MutableLiveData<>();
         progressMutableLiveData = new MutableLiveData<>();
-        mediaDataManager = MediaDataManager.getInstance();
+
+        mediaDataManager = DaggerMediaDataManagerComponent.create().getMediaDataManager();
+
         fileDownloader = DaggerNetworkComponent.builder()
                 .networkModule(new NetworkModule(this))
                 .build()
