@@ -1,11 +1,13 @@
 package com.waheed.bassem.nagwa.network;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.waheed.bassem.nagwa.data.MediaItem;
 import com.waheed.bassem.nagwa.network.dagger.DaggerDownloadAPIComponent;
 import com.waheed.bassem.nagwa.network.dagger.DownloadAPIModule;
 import com.waheed.bassem.nagwa.utils.NagwaFileUtils;
+import com.waheed.bassem.nagwa.utils.NetworkConnectionChecker;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,61 +47,69 @@ public class FileDownloader implements ProgressListener {
                 .getDownloadAPI();
     }
 
-    public void downloadFile(MediaItem mediaItem) {
+    public void downloadFile(Context context, MediaItem mediaItem) {
         mediaItemArrayList.add(mediaItem);
         if (mediaItemArrayList.size() == 1) {
-            download();
+            download(context);
         }
     }
 
-    private void download() {
+    private void download(Context context) {
         if (mediaItemArrayList.size() > 0) {
-            mediaItem = null;
-            mediaItem = mediaItemArrayList.get(0);
+            if (NetworkConnectionChecker.isNetworkAvailable(context)) {
+                mediaItem = null;
+                mediaItem = mediaItemArrayList.get(0);
 
-            mediaItem.setDownloading();
-            downloadInterface.onDownloadStarted(mediaItem);
+                mediaItem.setDownloading();
+                downloadInterface.onDownloadStarted(mediaItem);
 
-            downloadAPI.downloadFile(mediaItem.getUrl())
-                    .retry(throwable -> {
-                        mediaItem.incrementDownloadTrials();
-                        return (!mediaItem.isDownloaded()) && mediaItem.getDownloadTrials() < MAX_DOWNLOAD_TRIALS;
-                    })
-                    .flatMap((Response<ResponseBody> response) -> saveFile(response, mediaItem))
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<File>() {
-                        @Override
-                        public void onError(@NonNull Throwable e) {
-                            e.printStackTrace();
-                            Log.e(TAG, "onError e = " + e.getMessage());
+                downloadAPI.downloadFile(mediaItem.getUrl())
+                        .retry(throwable -> {
                             mediaItem.incrementDownloadTrials();
-                            if (mediaItem.getDownloadTrials() >= MAX_DOWNLOAD_TRIALS) {
-                                mediaItem.setDownloadingError();
+                            return (!mediaItem.isDownloaded()) && mediaItem.getDownloadTrials() < MAX_DOWNLOAD_TRIALS;
+                        })
+                        .flatMap((Response<ResponseBody> response) -> saveFile(response, mediaItem))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<File>() {
+                            @Override
+                            public void onError(@NonNull Throwable e) {
+                                e.printStackTrace();
+                                Log.e(TAG, "onError e = " + e.getMessage());
+                                mediaItem.incrementDownloadTrials();
+                                if (mediaItem.getDownloadTrials() >= MAX_DOWNLOAD_TRIALS) {
+                                    mediaItem.setDownloadingError();
+                                    downloadInterface.onDownloadFinished(mediaItem);
+                                    mediaItemArrayList.remove(0);
+                                }
+                                download(context);
+                            }
+
+                            @Override
+                            public void onComplete() {
+                                Log.e(TAG, "onComplete");
                                 downloadInterface.onDownloadFinished(mediaItem);
                                 mediaItemArrayList.remove(0);
+                                download(context);
                             }
-                            download();
-                        }
 
-                        @Override
-                        public void onComplete() {
-                            Log.e(TAG, "onComplete");
-                            downloadInterface.onDownloadFinished(mediaItem);
-                            mediaItemArrayList.remove(0);
-                            download();
-                        }
+                            @Override
+                            public void onSubscribe(@NonNull Disposable d) {
+                            }
 
-                        @Override
-                        public void onSubscribe(@NonNull Disposable d) {
-                        }
-
-                        @Override
-                        public void onNext(@NonNull File file) {
-                            Log.e(TAG, "onNext");
-                            mediaItem.setDownloaded();
-                        }
-                    });
+                            @Override
+                            public void onNext(@NonNull File file) {
+                                Log.e(TAG, "onNext");
+                                mediaItem.setDownloaded();
+                            }
+                        });
+            } else {
+                for (MediaItem mediaItem : mediaItemArrayList) {
+                    mediaItem.setNotDownloaded();
+                }
+                mediaItemArrayList.clear();
+                downloadInterface.onError(NetworkConnectionChecker.getNetworkErrorStringId());
+            }
         } else {
             Log.e(TAG, "download: all downloaded");
         }

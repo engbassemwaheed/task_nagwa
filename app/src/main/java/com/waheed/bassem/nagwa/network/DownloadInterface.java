@@ -7,4 +7,6 @@ public interface DownloadInterface {
     void onDownloadStarted (MediaItem mediaItem);
     void onDownloadFinished (MediaItem mediaItem);
     void onDownloadProgress(MediaItem mediaItem);
+
+    void onError(int networkErrorStringId);
 }

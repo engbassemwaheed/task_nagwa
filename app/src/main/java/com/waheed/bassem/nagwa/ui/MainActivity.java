@@ -141,9 +141,14 @@ public class MainActivity extends AppCompatActivity implements ActionInterface, 
     }
 
     @Override
+    public void notifyDataChanged() {
+        mainAdapter.notifyDataSetChanged();
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        mainViewModel.onRequestedPermissionResult(requestCode, permissions, grantResults);
+        mainViewModel.onRequestedPermissionResult(this, requestCode, permissions, grantResults);
     }
 
     @Override

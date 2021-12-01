@@ -6,4 +6,6 @@ public interface ActivityInterface {
 
     void showSnackBar(int messageId);
     void showSnackBar(String message);
+
+    void notifyDataChanged();
 }

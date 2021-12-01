@@ -9,7 +9,7 @@ import java.io.File;
 
 public class NagwaFileUtils {
 
-    private static final String ENCLOSURE_FOLDER = "Nagwa task downloads";
+    private static final String ENCLOSURE_FOLDER = "Nagwa downloads";
 
     public static File getDataFile(MediaItem mediaItem) {
         String path = "/" + mediaItem.getName() + mediaItem.getExtension();
