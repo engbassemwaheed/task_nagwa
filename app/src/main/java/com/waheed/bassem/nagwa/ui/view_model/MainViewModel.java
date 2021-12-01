@@ -1,4 +1,4 @@
-package com.waheed.bassem.nagwa.ui;
+package com.waheed.bassem.nagwa.ui.view_model;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +17,7 @@ import com.waheed.bassem.nagwa.network.FileDownloader;
 import com.waheed.bassem.nagwa.network.DownloadInterface;
 import com.waheed.bassem.nagwa.network.dagger.DaggerNetworkComponent;
 import com.waheed.bassem.nagwa.network.dagger.NetworkModule;
+import com.waheed.bassem.nagwa.ui.ActivityInterface;
 import com.waheed.bassem.nagwa.utils.NagwaFileUtils;
 import com.waheed.bassem.nagwa.utils.NagwaPermissionManager;
 

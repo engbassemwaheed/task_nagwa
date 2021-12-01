@@ -3,7 +3,6 @@ package com.waheed.bassem.nagwa.ui;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,9 +14,13 @@ import android.widget.LinearLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.waheed.bassem.nagwa.R;
 import com.waheed.bassem.nagwa.data.MediaItem;
+import com.waheed.bassem.nagwa.ui.dagger.DaggerUIComponent;
+import com.waheed.bassem.nagwa.ui.dagger.UIComponent;
+import com.waheed.bassem.nagwa.ui.dagger.UIModule;
 import com.waheed.bassem.nagwa.ui.dialog.AcceptanceDialog;
 import com.waheed.bassem.nagwa.ui.dialog.AcceptanceDialogInterface;
 import com.waheed.bassem.nagwa.ui.recycler_view.MainAdapter;
+import com.waheed.bassem.nagwa.ui.view_model.MainViewModel;
 
 public class MainActivity extends AppCompatActivity implements ActionInterface, ActivityInterface {
 
@@ -34,12 +37,16 @@ public class MainActivity extends AppCompatActivity implements ActionInterface, 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        UIComponent daggerUIComponent = DaggerUIComponent.builder()
+                .uIModule(new UIModule(this, this, this))
+                .build();
+
         //view model
-        mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        mainViewModel = daggerUIComponent.getMainViewModel();
         mainViewModel.setActivityInterface(this);
 
         //adapter
-        mainAdapter = new MainAdapter(this, this);
+        mainAdapter = daggerUIComponent.getMainAdapter();
 
         //views
         recyclerView = findViewById(R.id.items_recycler_view);
@@ -48,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements ActionInterface, 
 
         emptyLinearLayout = findViewById(R.id.empty_linear_layout);
 
-        acceptanceDialog = new AcceptanceDialog(this);
+        acceptanceDialog = daggerUIComponent.getAcceptanceDialog();
 
         //view model observers
         setViewModelObservers();

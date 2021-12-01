@@ -1,7 +1,6 @@
 package com.waheed.bassem.nagwa.ui.dialog;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -11,7 +10,6 @@ import androidx.annotation.NonNull;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
 import com.waheed.bassem.nagwa.R;
-import com.waheed.bassem.nagwa.ui.MainActivity;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

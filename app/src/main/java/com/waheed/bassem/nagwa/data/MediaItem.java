@@ -1,7 +1,5 @@
 package com.waheed.bassem.nagwa.data;
 
-import java.io.File;
-
 public class MediaItem {
 
     private final int id;
