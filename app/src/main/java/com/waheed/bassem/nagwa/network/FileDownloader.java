@@ -3,13 +3,15 @@ package com.waheed.bassem.nagwa.network;
 import android.util.Log;
 
 import com.waheed.bassem.nagwa.data.MediaItem;
-import com.waheed.bassem.nagwa.network.dagger.DaggerNetworkComponent;
-import com.waheed.bassem.nagwa.network.dagger.NetworkModule;
+import com.waheed.bassem.nagwa.network.dagger.DaggerDownloadAPIComponent;
+import com.waheed.bassem.nagwa.network.dagger.DownloadAPIModule;
 import com.waheed.bassem.nagwa.utils.NagwaFileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
@@ -28,26 +30,19 @@ public class FileDownloader implements ProgressListener {
     private static final String TAG = "FileDownloader";
     private static final int MAX_DOWNLOAD_TRIALS = 3;
 
-    private static FileDownloader fileDownloader;
     private final DownloadAPI downloadAPI;
     private final ArrayList<MediaItem> mediaItemArrayList;
     private final DownloadInterface downloadInterface;
     private MediaItem mediaItem;
 
-    private FileDownloader(DownloadInterface downloadInterface) {
+    @Inject
+    public FileDownloader(DownloadInterface downloadInterface) {
         this.downloadInterface = downloadInterface;
         mediaItemArrayList = new ArrayList<>();
-        downloadAPI = DaggerNetworkComponent.builder()
-                .networkModule(new NetworkModule(this))
+        downloadAPI = DaggerDownloadAPIComponent.builder()
+                .downloadAPIModule(new DownloadAPIModule(this))
                 .build()
                 .getDownloadAPI();
-    }
-
-    public static FileDownloader getInstance(DownloadInterface downloadInterface) {
-        if (fileDownloader == null) {
-            fileDownloader = new FileDownloader(downloadInterface);
-        }
-        return fileDownloader;
     }
 
     public void downloadFile(MediaItem mediaItem) {

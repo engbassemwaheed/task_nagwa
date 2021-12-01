@@ -22,10 +22,6 @@ import com.waheed.bassem.nagwa.utils.NagwaPermissionManager;
 
 import java.util.ArrayList;
 
-import javax.inject.Inject;
-
-import dagger.Component;
-
 
 public class MainViewModel extends ViewModel implements DownloadInterface {
 
@@ -47,7 +43,10 @@ public class MainViewModel extends ViewModel implements DownloadInterface {
         toDownloadMutableLiveData = new MutableLiveData<>();
         progressMutableLiveData = new MutableLiveData<>();
         mediaDataManager = MediaDataManager.getInstance();
-        fileDownloader = FileDownloader.getInstance(this);
+        fileDownloader = DaggerNetworkComponent.builder()
+                .networkModule(new NetworkModule(this))
+                .build()
+                .getFileDownloader();
         mediaItems = new ArrayList<>();
     }
 
